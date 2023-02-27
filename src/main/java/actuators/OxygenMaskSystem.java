@@ -1,19 +1,17 @@
 package actuators;
 
 import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.DeliverCallback;
 import enums.OxygenMaskMode;
 import utils.Actuators;
 import utils.Functions;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 import static utils.Formats.ACTUATOR_LENGTH;
 import static utils.Formats.ACTUATOR_NAME_STYLE;
 
 public class OxygenMaskSystem extends Actuator {
-    public OxygenMaskSystem(Connection connection) throws IOException, TimeoutException {
+    public OxygenMaskSystem(Connection connection) throws IOException {
         super(connection);
     }
 
@@ -23,11 +21,9 @@ public class OxygenMaskSystem extends Actuator {
     }
 
     @Override
-    public DeliverCallback onReceive() {
-        return (consumerTag, delivery) -> {
-            OxygenMaskMode action = OxygenMaskMode.fromByte(delivery.getBody()[0]);
-            System.out.println(Functions.formatColorReset(ACTUATOR_NAME_STYLE + Functions.center(
-                    "Oxygen Mask System", ACTUATOR_LENGTH), 1) + " " + action);
-        };
+    public void handle(byte[] message) {
+        OxygenMaskMode action = OxygenMaskMode.fromByte(message[0]);
+        System.out.println(Functions.formatColorReset(ACTUATOR_NAME_STYLE + Functions.center(
+                "Oxygen Mask System", ACTUATOR_LENGTH), 1) + " " + action);
     }
 }

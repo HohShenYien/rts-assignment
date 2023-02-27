@@ -13,8 +13,13 @@ public class Functions {
     }
 
     public static short bytesToShort(byte[] bytes) {
-        ByteBuffer wrapped = ByteBuffer.wrap(bytes); // big-endian by default
-        return wrapped.getShort(); // 1
+        ByteBuffer wrapped = ByteBuffer.wrap(bytes);
+        return wrapped.getShort();
+    }
+
+    public static int bytesToInt(byte[] bytes) {
+        ByteBuffer wrapped = ByteBuffer.wrap(bytes);
+        return wrapped.getInt();
     }
 
     public static String center(String str, int length) {
@@ -30,6 +35,12 @@ public class Functions {
         return byteBuffer.array();
     }
 
+    public static byte[] intToBytes(int number) {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(4);
+        byteBuffer.putInt(number);
+        return byteBuffer.array();
+    }
+
     public static int getRandom(int min, int max) {
         Random random = new Random();
         return random.nextInt(min, max);
@@ -41,5 +52,12 @@ public class Functions {
 
     public static String raisingOrReducing(int difference) {
         return difference > 0 ? "reducing" : "raising";
+    }
+
+    public static byte[] concatenateByteArrays(byte[] first, byte[] second) {
+        ByteBuffer bb = ByteBuffer.allocate(first.length + second.length);
+        bb.put(first);
+        bb.put(second);
+        return bb.array();
     }
 }

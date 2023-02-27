@@ -5,7 +5,7 @@ import utils.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static utils.Formats.CONTROL_SYSTEM_LENGTH;
 import static utils.Formats.CONTROL_SYSTEM_STYLE;
@@ -14,13 +14,14 @@ public class FlightControlSystem implements Runnable {
     private final Channel channelIn;
     private final String queueNameIn;
 
-    private final Channel channelOut;
-
     private CabinPressure pressure;
     private short altitude;
     private PlaneMode mode;
 
-    public FlightControlSystem(Connection connection) throws IOException, TimeoutException {
+    private final AtomicInteger logId;
+    private final EventManager eventManager;
+
+    public FlightControlSystem(Connection connection, EventManager eventManager) throws IOException {
         channelIn = connection.createChannel();
         channelIn.exchangeDeclare(Exchanges.SENSOR_OUTPUT, "direct");
         queueNameIn = channelIn.queueDeclare().getQueue();
@@ -30,9 +31,10 @@ public class FlightControlSystem implements Runnable {
             channelIn.queueBind(queueNameIn, Exchanges.SENSOR_OUTPUT, sensor);
         }
 
-        channelOut = connection.createChannel();
-        channelOut.exchangeDeclare(Exchanges.ACTUATOR_INPUT, "direct");
         altitude = Commons.STARTING_ALTITUDE;
+
+        logId = new AtomicInteger(0);
+        this.eventManager = eventManager;
     }
 
     @Override
@@ -40,13 +42,8 @@ public class FlightControlSystem implements Runnable {
         try {
             channelIn.basicConsume(queueNameIn, true, (consumerTag, delivery) -> {
                 byte[] body = delivery.getBody();
-                switch (delivery.getEnvelope().getRoutingKey()) {
-                    case Sensors.TEMPERATURE -> actOnTemperature(body);
-                    case Sensors.LANDING_MODE -> actOnLandingMode(body);
-                    case Sensors.CABIN_PRESSURE -> actOnPressure(body);
-                    case Sensors.WEATHER -> actOnWeather(body);
-                    case Sensors.ALTITUDE -> actOnAltitude(body);
-                }
+                actOnChange(body, delivery.getEnvelope().getRoutingKey());
+
             }, consumerTag -> {
             });
         } catch (IOException e) {
@@ -55,10 +52,18 @@ public class FlightControlSystem implements Runnable {
     }
 
     private void publishAction(String actuator, byte[] change) {
-        try {
-            channelOut.basicPublish(Exchanges.ACTUATOR_INPUT, actuator, null, change);
-        } catch (IOException e) {
-            e.printStackTrace();
+        int id = logId.getAndIncrement();
+        eventManager.addLog(id, change, actuator);
+        eventManager.publishAction(id, actuator, change);
+    }
+
+    private void actOnChange(byte[] message, String key) {
+        switch (key) {
+            case Sensors.TEMPERATURE -> actOnTemperature(message);
+            case Sensors.LANDING_MODE -> actOnLandingMode(message);
+            case Sensors.CABIN_PRESSURE -> actOnPressure(message);
+            case Sensors.WEATHER -> actOnWeather(message);
+            case Sensors.ALTITUDE -> actOnAltitude(message);
         }
     }
 
@@ -165,4 +170,5 @@ public class FlightControlSystem implements Runnable {
         }
         return (Math.abs(difference) > Commons.OPTIMAL_ALTITUDE_RANGE);
     }
+
 }

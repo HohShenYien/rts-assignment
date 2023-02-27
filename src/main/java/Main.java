@@ -10,22 +10,22 @@ import utils.Colors;
 import utils.Functions;
 
 import java.io.IOException;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeoutException;
 
 public class Main {
-    public static void main(String[] args) throws IOException, TimeoutException, ExecutionException, InterruptedException {
+    public static void main(String[] args) throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         Connection connection = factory.newConnection();
 
         ExecutorService service = Executors.newFixedThreadPool(20);
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3);
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(12);
 
         System.out.println(Functions.formatColorReset(Colors.BLACK + Colors.YELLOW_BACKGROUND +
                 " ======== Simulation begin ======== "));
-
-        FlightControlSystem flightControlSystem = new FlightControlSystem(connection);
-        service.submit(flightControlSystem);
 
         TemperatureSensor temperatureSensor = new TemperatureSensor(connection);
         service.submit(temperatureSensor);
@@ -59,5 +59,10 @@ public class Main {
         service.submit(tailFlagSystem);
         WeatherSimulation weatherSimulation = new WeatherSimulation(connection, scheduler);
         service.submit(weatherSimulation);
+
+        EventManager eventManager = new EventManager(connection, scheduler);
+        service.submit(eventManager);
+        FlightControlSystem flightControlSystem = new FlightControlSystem(connection, eventManager);
+        service.submit(flightControlSystem);
     }
 }
