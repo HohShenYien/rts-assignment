@@ -22,6 +22,11 @@ public class Functions {
         return wrapped.getInt();
     }
 
+    public static long bytesToLong(byte[] bytes) {
+        ByteBuffer wrapped = ByteBuffer.wrap(bytes);
+        return wrapped.getLong();
+    }
+
     public static String center(String str, int length) {
         int half = (length - str.length()) / 2;
         return " ".repeat(Math.max(0, half)) +
@@ -38,6 +43,12 @@ public class Functions {
     public static byte[] intToBytes(int number) {
         ByteBuffer byteBuffer = ByteBuffer.allocate(4);
         byteBuffer.putInt(number);
+        return byteBuffer.array();
+    }
+
+    public static byte[] longToBytes(long number) {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(8);
+        byteBuffer.putLong(number);
         return byteBuffer.array();
     }
 

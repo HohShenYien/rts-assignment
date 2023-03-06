@@ -1,9 +1,11 @@
 package actuators;
 
+import benchmark.TimeManager;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Delivery;
 import utils.Exchanges;
+import utils.Functions;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -17,10 +19,10 @@ public abstract class Actuator implements Runnable {
 
     public Actuator(Connection connection) throws IOException {
         channelIn = connection.createChannel();
-        channelIn.exchangeDeclare(Exchanges.ACTUATOR_INPUT, "direct");
+        channelIn.exchangeDeclare(Exchanges.ACTUATOR_INPUT, "fanout");
         queueNameIn = channelIn.queueDeclare().getQueue();
 
-        channelIn.queueBind(queueNameIn, Exchanges.ACTUATOR_INPUT, getActuatorName());
+        channelIn.queueBind(queueNameIn, Exchanges.ACTUATOR_INPUT, "");
 
         channelOut = connection.createChannel();
         channelOut.exchangeDeclare(Exchanges.SENSOR_INPUT, "direct");
@@ -49,10 +51,16 @@ public abstract class Actuator implements Runnable {
     protected abstract String getActuatorName();
 
     private void onReceive(String consumerTag, Delivery delivery) {
+        long now = System.currentTimeMillis();
+
         byte[] body = delivery.getBody();
-        // first 4 bytes are id
-        byte[] id = Arrays.copyOfRange(body, 0, 4);
-        byte[] message = Arrays.copyOfRange(body, 4, body.length);
+        // first 8 bytes are time in millis
+        byte[] milliseconds = Arrays.copyOfRange(body, 0, 8);
+        long duration = now - Functions.bytesToLong(milliseconds);
+        TimeManager.addDuration(duration);
+        // next 4 bytes are id
+        byte[] id = Arrays.copyOfRange(body, 8, 12);
+        byte[] message = Arrays.copyOfRange(body, 12, body.length);
         try {
             channelReceived.basicPublish(Exchanges.SENSOR_RECEIVED, "", null, id);
         } catch (IOException e) {

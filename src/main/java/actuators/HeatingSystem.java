@@ -23,7 +23,7 @@ public class HeatingSystem extends Actuator {
 
         short change = Functions.bytesToShort(message);
 
-        Formats.printActuator("Heating System", (change < 0 ? "Raising" : "Reducing")
+        Formats.printActuator("Heating System", " " + (change < 0 ? "Raising" : "Reducing")
                 + " Temperature by " + change + "°C");
         publishChange(Sensors.TEMPERATURE, Functions.shortToBytes(change));
     }

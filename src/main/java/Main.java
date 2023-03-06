@@ -1,11 +1,8 @@
-import actuators.*;
+import actuators.HeatingSystem;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import sensory.*;
-import simulations.CabinPressureSimulation;
-import simulations.LandingSimulation;
+import sensory.TemperatureSensor;
 import simulations.TemperatureSimulation;
-import simulations.WeatherSimulation;
 import utils.Colors;
 import utils.Functions;
 
@@ -33,32 +30,32 @@ public class Main {
         service.submit(heatingSystem);
         TemperatureSimulation temperatureSimulation = new TemperatureSimulation(connection, scheduler);
         service.submit(temperatureSimulation);
-
-        AltitudeSensor altitudeSensor = new AltitudeSensor(connection);
-        service.submit(altitudeSensor);
-        CabinPressureSensor cabinPressureSensor = new CabinPressureSensor(connection);
-        service.submit(cabinPressureSensor);
-        ThrustSystem thrustSystem = new ThrustSystem(connection);
-        service.submit(thrustSystem);
-        OxygenMaskSystem oxygenMaskSystem = new OxygenMaskSystem(connection);
-        service.submit(oxygenMaskSystem);
-        CabinPressureSimulation cabinPressureSimulation = new CabinPressureSimulation(connection,
-                scheduler);
-        service.submit(cabinPressureSimulation);
-
-        LandingSensor landingSensor = new LandingSensor(connection);
-        service.submit(landingSensor);
-        LandingGearSystem landingGearSystem = new LandingGearSystem(connection, service);
-        service.submit(landingGearSystem);
-        LandingSimulation landingSimulation = new LandingSimulation(connection, scheduler);
-        service.submit(landingSimulation);
-
-        WeatherSensor weatherSensor = new WeatherSensor(connection);
-        service.submit(weatherSensor);
-        TailFlagSystem tailFlagSystem = new TailFlagSystem(connection);
-        service.submit(tailFlagSystem);
-        WeatherSimulation weatherSimulation = new WeatherSimulation(connection, scheduler);
-        service.submit(weatherSimulation);
+//
+//        AltitudeSensor altitudeSensor = new AltitudeSensor(connection);
+//        service.submit(altitudeSensor);
+//        CabinPressureSensor cabinPressureSensor = new CabinPressureSensor(connection);
+//        service.submit(cabinPressureSensor);
+//        ThrustSystem thrustSystem = new ThrustSystem(connection);
+//        service.submit(thrustSystem);
+//        OxygenMaskSystem oxygenMaskSystem = new OxygenMaskSystem(connection);
+//        service.submit(oxygenMaskSystem);
+//        CabinPressureSimulation cabinPressureSimulation = new CabinPressureSimulation(connection,
+//                scheduler);
+//        service.submit(cabinPressureSimulation);
+//
+//        LandingSensor landingSensor = new LandingSensor(connection);
+//        service.submit(landingSensor);
+//        LandingGearSystem landingGearSystem = new LandingGearSystem(connection, service);
+//        service.submit(landingGearSystem);
+//        LandingSimulation landingSimulation = new LandingSimulation(connection, scheduler);
+//        service.submit(landingSimulation);
+//
+//        WeatherSensor weatherSensor = new WeatherSensor(connection);
+//        service.submit(weatherSensor);
+//        TailFlagSystem tailFlagSystem = new TailFlagSystem(connection);
+//        service.submit(tailFlagSystem);
+//        WeatherSimulation weatherSimulation = new WeatherSimulation(connection, scheduler);
+//        service.submit(weatherSimulation);
 
         EventManager eventManager = new EventManager(connection, scheduler);
         service.submit(eventManager);

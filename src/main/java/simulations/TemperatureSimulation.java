@@ -1,5 +1,6 @@
 package simulations;
 
+import benchmark.TimeManager;
 import com.rabbitmq.client.Connection;
 import utils.Colors;
 import utils.Functions;
@@ -10,14 +11,17 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeoutException;
 
 public class TemperatureSimulation extends Simulation {
+    private int timeRun;
+
     public TemperatureSimulation(Connection connection, ScheduledExecutorService service) throws IOException,
             TimeoutException {
         super(connection, service);
+        timeRun = 0;
     }
 
     @Override
     protected void simulate() {
-        int newTemp = Functions.getRandom(-4, 4);
+        int newTemp = 100;
         if (newTemp == 0) {
             return;
         }
@@ -31,11 +35,15 @@ public class TemperatureSimulation extends Simulation {
 
     @Override
     protected boolean toContinue() {
-        return true;
+        if (++timeRun < 1000) {
+            return true;
+        }
+        TimeManager.printDuration();
+        return false;
     }
 
     @Override
     protected int getIntervalInMillis() {
-        return Functions.getRandom(1, 3) * 1000;
+        return Functions.getRandom(1, 3) * 50;
     }
 }
