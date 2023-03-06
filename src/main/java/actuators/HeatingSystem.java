@@ -2,13 +2,11 @@ package actuators;
 
 import com.rabbitmq.client.Connection;
 import utils.Actuators;
+import utils.Formats;
 import utils.Functions;
 import utils.Sensors;
 
 import java.io.IOException;
-
-import static utils.Formats.ACTUATOR_LENGTH;
-import static utils.Formats.ACTUATOR_NAME_STYLE;
 
 public class HeatingSystem extends Actuator {
     public HeatingSystem(Connection connection) throws IOException {
@@ -25,9 +23,8 @@ public class HeatingSystem extends Actuator {
 
         short change = Functions.bytesToShort(message);
 
-        System.out.println(Functions.formatColorReset(ACTUATOR_NAME_STYLE + Functions.center(
-                "Heating System", ACTUATOR_LENGTH), 1) + (change < 0 ? "Raising" : "Reducing") +
-                " Temperature by " + change + "°C");
+        Formats.printActuator("Heating System", (change < 0 ? "Raising" : "Reducing")
+                + " Temperature by " + change + "°C");
         publishChange(Sensors.TEMPERATURE, Functions.shortToBytes(change));
     }
 }

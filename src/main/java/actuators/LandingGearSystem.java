@@ -4,13 +4,11 @@ import com.rabbitmq.client.Connection;
 import enums.PlaneMode;
 import utils.Actuators;
 import utils.Colors;
+import utils.Formats;
 import utils.Functions;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
-
-import static utils.Formats.ACTUATOR_LENGTH;
-import static utils.Formats.ACTUATOR_NAME_STYLE;
 
 public class LandingGearSystem extends Actuator {
     private final Connection connection;
@@ -31,8 +29,7 @@ public class LandingGearSystem extends Actuator {
     public void handle(byte[] message) {
         PlaneMode mode = PlaneMode.fromByte(message[0]);
         if (mode == PlaneMode.LANDING) {
-            System.out.println(Functions.formatColorReset(ACTUATOR_NAME_STYLE + Functions.center(
-                    "Landing Gear System", ACTUATOR_LENGTH), 1) + " Landing now, plane gear " +
+            Formats.printActuator("Landing Gear System", " Landing now, plane gear " +
                     "is opened...");
 
             try {

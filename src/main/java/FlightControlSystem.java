@@ -7,9 +7,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static utils.Formats.CONTROL_SYSTEM_LENGTH;
-import static utils.Formats.CONTROL_SYSTEM_STYLE;
-
 public class FlightControlSystem implements Runnable {
     private final Channel channelIn;
     private final String queueNameIn;
@@ -77,8 +74,7 @@ public class FlightControlSystem implements Runnable {
             change = (short) -difference;
         }
         if (change != 0) {
-            System.out.println(Functions.formatColorReset(CONTROL_SYSTEM_STYLE + Functions.center(
-                    "Control System", CONTROL_SYSTEM_LENGTH), 2) + " Temperature " + temperature +
+            Formats.printControlSystem(" Temperature " + temperature +
                     "°C is higher than optimal temperature, " + (change < 0 ? "raising" :
                     "reducing") + " it by " + difference + "°C");
             publishAction(Actuators.HEATING_SYSTEM, Functions.shortToBytes(change));
@@ -89,11 +85,8 @@ public class FlightControlSystem implements Runnable {
         mode = PlaneMode.fromByte(message[0]);
 
         if (mode == PlaneMode.LANDING) {
-            System.out.println(Functions.formatColorReset(CONTROL_SYSTEM_STYLE + Functions.center(
-                    "Control System", CONTROL_SYSTEM_LENGTH), 2) + " Begins to land");
-            System.out.println(Functions.formatColorReset(CONTROL_SYSTEM_STYLE + Functions.center(
-                    "Control System", CONTROL_SYSTEM_LENGTH), 2) + " Plane is landing, lowering the " +
-                    "altitude...");
+            Formats.printControlSystem(" Begins to land");
+            Formats.printControlSystem(" Plane is landing, lowering the altitude...");
             publishAction(Actuators.LANDING_GEAR, PlaneMode.toBytes(mode));
             publishAction(Actuators.THRUST_SYSTEM, Functions.shortToBytes((short) -altitude));
         }
@@ -110,16 +103,14 @@ public class FlightControlSystem implements Runnable {
                 OxygenMaskMode.KEEP;
 
 
-        System.out.println(Functions.formatColorReset(CONTROL_SYSTEM_STYLE + Functions.center(
-                "Control System", CONTROL_SYSTEM_LENGTH), 2) + " " + action);
+        Formats.printControlSystem(" " + action);
 
         publishAction(Actuators.OXYGEN_MASK, OxygenMaskMode.toBytes(mode));
 
         if (pressure == CabinPressure.LOW) {
             if (altitude > Commons.SAFE_ALTITUDE_WHEN_LOW_PRESSURE) {
                 short change = (short) (Commons.SAFE_ALTITUDE_WHEN_LOW_PRESSURE - altitude);
-                System.out.println(Functions.formatColorReset(CONTROL_SYSTEM_STYLE + Functions.center(
-                        "Control System", CONTROL_SYSTEM_LENGTH), 2) + " Cabin Low Pressure, " +
+                Formats.printControlSystem(" Cabin Low Pressure, " +
                         "reducing airplane altitude to " + Commons.SAFE_ALTITUDE_WHEN_LOW_PRESSURE + "m");
                 publishAction(Actuators.THRUST_SYSTEM, Functions.shortToBytes(change));
             }
@@ -141,8 +132,7 @@ public class FlightControlSystem implements Runnable {
             action = "Bad weather ahead, airplane is diverted from normal path";
         }
 
-        System.out.println(Functions.formatColorReset(CONTROL_SYSTEM_STYLE + Functions.center(
-                "Control System", CONTROL_SYSTEM_LENGTH), 2) + " " + action);
+        Formats.printControlSystem(" " + action);
 
         publishAction(Actuators.TAIL_FLAG, TailFlagAction.toBytes(tailFlagAction));
     }
@@ -155,9 +145,8 @@ public class FlightControlSystem implements Runnable {
             return;
         }
 
-        System.out.println(Functions.formatColorReset(CONTROL_SYSTEM_STYLE + Functions.center(
-                "Control System", CONTROL_SYSTEM_LENGTH), 2) + " Altitude " + altitude +
-                "m is " + Functions.higherOrLower(difference) + " than optimal altitude, " + Functions.raisingOrReducing(difference) +
+        Formats.printControlSystem(" Altitude " + altitude + "m is " +
+                Functions.higherOrLower(difference) + " than optimal altitude, " + Functions.raisingOrReducing(difference) +
                 " it by " + Math.abs(difference) + "m");
 
         publishAction(Actuators.THRUST_SYSTEM, Functions.shortToBytes((short) -difference));

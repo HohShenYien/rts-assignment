@@ -2,13 +2,11 @@ package actuators;
 
 import com.rabbitmq.client.Connection;
 import utils.Actuators;
+import utils.Formats;
 import utils.Functions;
 import utils.Sensors;
 
 import java.io.IOException;
-
-import static utils.Formats.ACTUATOR_LENGTH;
-import static utils.Formats.ACTUATOR_NAME_STYLE;
 
 public class ThrustSystem extends Actuator {
     public ThrustSystem(Connection connection) throws IOException {
@@ -24,8 +22,7 @@ public class ThrustSystem extends Actuator {
     public void handle(byte[] message) {
         short change = Functions.bytesToShort(message);
 
-        System.out.println(Functions.formatColorReset(ACTUATOR_NAME_STYLE + Functions.center(
-                "Thrust System", ACTUATOR_LENGTH), 1) + " Lowering the altitude by " + change + "m");
+        Formats.printActuator("Thrust System", " Lowering the altitude by " + change + "m");
         publishChange(Sensors.ALTITUDE, Functions.shortToBytes(change));
     }
 }
