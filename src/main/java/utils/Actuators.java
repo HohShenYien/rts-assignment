@@ -6,4 +6,5 @@ public class Actuators {
     public static final String OXYGEN_MASK = "OXYGEN_MASK";
     public static final String TAIL_FLAG = "TAIL_FLAG";
     public static final String THRUST_SYSTEM = "THRUST_SYSTEM";
+    public static final String BRAKE_SYSTEM = "BRAKE_SYSTEM";
 }
