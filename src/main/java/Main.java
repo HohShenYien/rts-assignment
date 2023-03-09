@@ -48,8 +48,10 @@ public class Main {
 
         LandingSensor landingSensor = new LandingSensor(connection);
         service.submit(landingSensor);
-        LandingGearSystem landingGearSystem = new LandingGearSystem(connection, service);
+        LandingGearSystem landingGearSystem = new LandingGearSystem(connection);
         service.submit(landingGearSystem);
+        BrakeSystem brakeSystem = new BrakeSystem(connection, service);
+        service.submit(brakeSystem);
         LandingSimulation landingSimulation = new LandingSimulation(connection, scheduler);
         service.submit(landingSimulation);
 

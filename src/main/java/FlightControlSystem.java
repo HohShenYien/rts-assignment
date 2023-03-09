@@ -75,8 +75,8 @@ public class FlightControlSystem implements Runnable {
         }
         if (change != 0) {
             Formats.printControlSystem(" Temperature " + temperature +
-                    "°C is higher than optimal temperature, " + (change < 0 ? "raising" :
-                    "reducing") + " it by " + difference + "°C");
+                    "°C is higher than optimal temperature, " + (change < 0 ? "reducing" :
+                    "raising") + " it by " + difference + "°C");
             publishAction(Actuators.HEATING_SYSTEM, Functions.shortToBytes(change));
         }
     }
@@ -87,8 +87,7 @@ public class FlightControlSystem implements Runnable {
         if (mode == PlaneMode.LANDING) {
             Formats.printControlSystem(" Begins to land");
             Formats.printControlSystem(" Plane is landing, lowering the altitude...");
-            publishAction(Actuators.LANDING_GEAR, PlaneMode.toBytes(mode));
-            publishAction(Actuators.THRUST_SYSTEM, Functions.shortToBytes((short) -altitude));
+            publishAction(Actuators.THRUST_SYSTEM, Functions.shortToBytes((short) -1000));
         }
     }
 
@@ -141,20 +140,36 @@ public class FlightControlSystem implements Runnable {
         altitude = Functions.bytesToShort(message);
         short difference = (short) (altitude - Commons.OPTIMAL_ALTITUDE);
 
-        if (difference == 0 || !needToChangeAltitude(difference)) {
+        if (mode != PlaneMode.LANDING && (difference == 0 || !needToChangeAltitude(difference))) {
             return;
         }
 
-        Formats.printControlSystem(" Altitude " + altitude + "m is " +
-                Functions.higherOrLower(difference) + " than optimal altitude, " + Functions.raisingOrReducing(difference) +
-                " it by " + Math.abs(difference) + "m");
+        if (mode == PlaneMode.LANDING) {
+            if (altitude == 0) {
+                Formats.printControlSystem(" Plane reaches the ground, applying brake...");
+                publishAction(Actuators.BRAKE_SYSTEM, Functions.shortToBytes(altitude));
+                return;
+            }
+            difference = (short) Math.min(1000, altitude);
+            if (altitude <= 1000) {
+                // opens landing gear
+                Formats.printControlSystem(" Plane is below 1000m, opening landing gear");
+                publishAction(Actuators.LANDING_GEAR, PlaneMode.toBytes(mode));
+            }
+            Formats.printControlSystem(" Plane is landing, lowering altitude by " + difference +
+                    "m...");
+        } else {
+            Formats.printControlSystem(" Altitude " + altitude + "m is " +
+                    Functions.higherOrLower(difference) + " than optimal altitude, " + Functions.raisingOrReducing(difference) +
+                    " it by " + Math.abs(difference) + "m");
+        }
 
         publishAction(Actuators.THRUST_SYSTEM, Functions.shortToBytes((short) -difference));
     }
 
     private boolean needToChangeAltitude(int difference) {
         // Altitude lower is okay if cabin pressure is low or when landing
-        if (difference < 0 && (pressure == CabinPressure.LOW || mode == PlaneMode.LANDING)) {
+        if (difference < 0 && (pressure == CabinPressure.LOW)) {
             return false;
         }
         return (Math.abs(difference) > Commons.OPTIMAL_ALTITUDE_RANGE);

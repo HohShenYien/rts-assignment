@@ -7,7 +7,6 @@ import utils.Exchanges;
 import java.io.IOException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public abstract class Simulation implements Runnable {
     protected final Channel channel;
@@ -15,8 +14,7 @@ public abstract class Simulation implements Runnable {
     protected final ScheduledExecutorService service;
     private boolean firstTime = true;
 
-    public Simulation(Connection connection, ScheduledExecutorService service) throws IOException,
-            TimeoutException {
+    public Simulation(Connection connection, ScheduledExecutorService service) throws IOException {
         channel = connection.createChannel();
         channel.exchangeDeclare(Exchanges.SENSOR_INPUT, "direct");
         queueName = channel.queueDeclare().getQueue();
