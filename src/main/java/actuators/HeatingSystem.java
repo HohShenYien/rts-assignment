@@ -7,10 +7,15 @@ import utils.Functions;
 import utils.Sensors;
 
 import java.io.IOException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class HeatingSystem extends Actuator {
-    public HeatingSystem(Connection connection) throws IOException {
+    private final ScheduledExecutorService scheduler;
+
+    public HeatingSystem(Connection connection, ScheduledExecutorService scheduler) throws IOException {
         super(connection);
+        this.scheduler = scheduler;
     }
 
     @Override
@@ -25,11 +30,8 @@ public class HeatingSystem extends Actuator {
 
         Formats.printActuator("Heating System", " " + (change < 0 ? "Reducing" : "Raising")
                 + " Temperature by " + Math.abs(change) + "°C");
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        publishChange(Sensors.TEMPERATURE, Functions.shortToBytes(change));
+
+        scheduler.schedule(() -> publishChange(Sensors.TEMPERATURE,
+                Functions.shortToBytes(change)), 200, TimeUnit.MILLISECONDS);
     }
 }

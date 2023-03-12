@@ -5,6 +5,7 @@ import utils.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class FlightControlSystem implements Runnable {
@@ -18,7 +19,10 @@ public class FlightControlSystem implements Runnable {
     private final AtomicInteger logId;
     private final EventManager eventManager;
 
-    public FlightControlSystem(Connection connection, EventManager eventManager) throws IOException {
+    private final ScheduledExecutorService scheduler;
+
+    public FlightControlSystem(Connection connection, EventManager eventManager,
+                               ScheduledExecutorService scheduler) throws IOException {
         channelIn = connection.createChannel();
         channelIn.exchangeDeclare(Exchanges.SENSOR_OUTPUT, "direct");
         queueNameIn = channelIn.queueDeclare().getQueue();
@@ -32,6 +36,8 @@ public class FlightControlSystem implements Runnable {
 
         logId = new AtomicInteger(0);
         this.eventManager = eventManager;
+
+        this.scheduler = scheduler;
     }
 
     @Override
@@ -146,6 +152,7 @@ public class FlightControlSystem implements Runnable {
 
         if (mode == PlaneMode.LANDING) {
             if (altitude == 0) {
+                this.scheduler.shutdown();
                 Formats.printControlSystem(" Plane reaches the ground, applying brake...");
                 publishAction(Actuators.BRAKE_SYSTEM, Functions.shortToBytes(altitude));
                 return;
