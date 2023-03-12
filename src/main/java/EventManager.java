@@ -29,7 +29,7 @@ public class EventManager implements Runnable {
         channelIn.queueBind(queueNameIn, Exchanges.SENSOR_RECEIVED, "");
 
         channelOut = connection.createChannel();
-        channelOut.exchangeDeclare(Exchanges.ACTUATOR_INPUT, "fanout");
+        channelOut.exchangeDeclare(Exchanges.ACTUATOR_INPUT, "direct");
 
         this.scheduler = scheduler;
         logStore = new HashMap<>();
@@ -57,8 +57,8 @@ public class EventManager implements Runnable {
             byte[] timeInBytes = Functions.longToBytes(System.currentTimeMillis());
             byte[] result = Functions.concatenateByteArrays(timeInBytes,
                     Functions.concatenateByteArrays(idInBytes, change));
-            // the message sent will be in format millis:id:result, where id in the first four bytes
-            channelOut.basicPublish(Exchanges.ACTUATOR_INPUT, "", null, result);
+            // the message sent will be in format millis(8):id(4):result
+            channelOut.basicPublish(Exchanges.ACTUATOR_INPUT, actuator, null, result);
             checkEventReceived(id, actuator, change);
         } catch (IOException e) {
             e.printStackTrace();
@@ -71,7 +71,7 @@ public class EventManager implements Runnable {
             scheduler.schedule(() -> {
                 if (!isLogReceived(id)) {
                     System.out.println(Functions.formatColorReset(Colors.RED + "Message not " +
-                            "received, resending..."));
+                            "received, resending..." + "-" + id));
                     publishAction(id, actuator, change);
                 }
             }, 200, TimeUnit.MILLISECONDS);

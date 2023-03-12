@@ -19,10 +19,10 @@ public abstract class Actuator implements Runnable {
 
     public Actuator(Connection connection) throws IOException {
         channelIn = connection.createChannel();
-        channelIn.exchangeDeclare(Exchanges.ACTUATOR_INPUT, "fanout");
+        channelIn.exchangeDeclare(Exchanges.ACTUATOR_INPUT, "direct");
         queueNameIn = channelIn.queueDeclare().getQueue();
 
-        channelIn.queueBind(queueNameIn, Exchanges.ACTUATOR_INPUT, "");
+        channelIn.queueBind(queueNameIn, Exchanges.ACTUATOR_INPUT, getActuatorName());
 
         channelOut = connection.createChannel();
         channelOut.exchangeDeclare(Exchanges.SENSOR_INPUT, "direct");
@@ -51,12 +51,12 @@ public abstract class Actuator implements Runnable {
     protected abstract String getActuatorName();
 
     private void onReceive(String consumerTag, Delivery delivery) {
-        long now = System.currentTimeMillis();
+        long nowInMillis = System.currentTimeMillis();
 
         byte[] body = delivery.getBody();
         // first 8 bytes are time in millis
-        byte[] milliseconds = Arrays.copyOfRange(body, 0, 8);
-        long duration = now - Functions.bytesToLong(milliseconds);
+        byte[] startTimeInMillis = Arrays.copyOfRange(body, 0, 8);
+        long duration = nowInMillis - Functions.bytesToLong(startTimeInMillis);
         TimeManager.addDuration(duration);
         // next 4 bytes are id
         byte[] id = Arrays.copyOfRange(body, 8, 12);

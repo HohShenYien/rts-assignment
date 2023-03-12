@@ -42,6 +42,6 @@ public class WeatherSimulation extends Simulation {
 
     @Override
     protected int getIntervalInMillis() {
-        return (inBadWeather ? Functions.getRandom(1, 2) : Functions.getRandom(2, 5)) * 1000;
+        return (inBadWeather ? Functions.getRandom(1, 2) : Functions.getRandom(2, 3)) * 200;
     }
 }

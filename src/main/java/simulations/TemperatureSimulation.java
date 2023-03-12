@@ -21,7 +21,7 @@ public class TemperatureSimulation extends Simulation {
 
     @Override
     protected void simulate() {
-        int newTemp = 100;
+        int newTemp = 100 - Functions.getRandom(0, 1) * 200;
         if (newTemp == 0) {
             return;
         }
@@ -38,12 +38,12 @@ public class TemperatureSimulation extends Simulation {
         if (++timeRun < 1000) {
             return true;
         }
-        TimeManager.printDuration();
+        TimeManager.summary();
         return false;
     }
 
     @Override
     protected int getIntervalInMillis() {
-        return Functions.getRandom(1, 3) * 50;
+        return Functions.getRandom(1, 3) * 200;
     }
 }
