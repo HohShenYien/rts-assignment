@@ -1,7 +1,7 @@
 import actuators.*;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import sensory.*;
+import sensors.*;
 import simulations.CabinPressureSimulation;
 import simulations.LandingSimulation;
 import simulations.TemperatureSimulation;
