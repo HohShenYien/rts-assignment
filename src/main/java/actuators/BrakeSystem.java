@@ -1,5 +1,6 @@
 package actuators;
 
+import benchmark.TimeManager;
 import com.rabbitmq.client.Connection;
 import utils.Actuators;
 import utils.Colors;
@@ -39,6 +40,8 @@ public class BrakeSystem extends Actuator {
                         " ======== Simulation ended ======== "));
                 connection.abort();
                 service.shutdownNow();
+
+                TimeManager.summary();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

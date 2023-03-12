@@ -24,7 +24,7 @@ public class Main {
         ExecutorService service = Executors.newFixedThreadPool(20);
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(12);
         ScheduledExecutorService delayedScheduler = Executors.newScheduledThreadPool(8);
-
+        
         System.out.println(Functions.formatColorReset(Colors.BLACK + Colors.YELLOW_BACKGROUND +
                 " ======== Simulation begin ======== "));
 

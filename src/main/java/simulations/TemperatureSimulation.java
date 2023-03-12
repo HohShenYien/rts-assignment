@@ -1,6 +1,5 @@
 package simulations;
 
-import benchmark.TimeManager;
 import com.rabbitmq.client.Connection;
 import utils.Colors;
 import utils.Functions;
@@ -21,7 +20,7 @@ public class TemperatureSimulation extends Simulation {
 
     @Override
     protected void simulate() {
-        int newTemp = 100 - Functions.getRandom(0, 1) * 200;
+        int newTemp = Functions.getRandom(-5, 5);
         if (newTemp == 0) {
             return;
         }
@@ -35,15 +34,11 @@ public class TemperatureSimulation extends Simulation {
 
     @Override
     protected boolean toContinue() {
-        if (++timeRun < 1000) {
-            return true;
-        }
-        TimeManager.summary();
-        return false;
+        return true;
     }
 
     @Override
     protected int getIntervalInMillis() {
-        return Functions.getRandom(1, 3) * 200;
+        return Functions.getRandom(1, 3) * 20;
     }
 }
