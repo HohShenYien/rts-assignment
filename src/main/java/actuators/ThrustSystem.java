@@ -7,10 +7,15 @@ import utils.Functions;
 import utils.Sensors;
 
 import java.io.IOException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class ThrustSystem extends Actuator {
-    public ThrustSystem(Connection connection) throws IOException {
+    private final ScheduledExecutorService scheduler;
+
+    public ThrustSystem(Connection connection, ScheduledExecutorService scheduler) throws IOException {
         super(connection);
+        this.scheduler = scheduler;
     }
 
     @Override
@@ -25,11 +30,7 @@ public class ThrustSystem extends Actuator {
         Formats.printActuator("Thrust System", " " + (change > 0 ?
                 "Raising" : "Lowering") + " the altitude by " + Math.abs(change) +
                 "m");
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        publishChange(Sensors.ALTITUDE, Functions.shortToBytes(change));
+
+        scheduler.schedule(() -> publishChange(Sensors.ALTITUDE, Functions.shortToBytes(change)), 200, TimeUnit.MILLISECONDS);
     }
 }

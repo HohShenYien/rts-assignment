@@ -23,13 +23,14 @@ public class Main {
 
         ExecutorService service = Executors.newFixedThreadPool(20);
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(12);
+        ScheduledExecutorService delayedScheduler = Executors.newScheduledThreadPool(8);
 
         System.out.println(Functions.formatColorReset(Colors.BLACK + Colors.YELLOW_BACKGROUND +
                 " ======== Simulation begin ======== "));
 
         TemperatureSensor temperatureSensor = new TemperatureSensor(connection);
         service.submit(temperatureSensor);
-        HeatingSystem heatingSystem = new HeatingSystem(connection);
+        HeatingSystem heatingSystem = new HeatingSystem(connection, delayedScheduler);
         service.submit(heatingSystem);
         TemperatureSimulation temperatureSimulation = new TemperatureSimulation(connection, scheduler);
         service.submit(temperatureSimulation);
@@ -38,7 +39,7 @@ public class Main {
         service.submit(altitudeSensor);
         CabinPressureSensor cabinPressureSensor = new CabinPressureSensor(connection);
         service.submit(cabinPressureSensor);
-        ThrustSystem thrustSystem = new ThrustSystem(connection);
+        ThrustSystem thrustSystem = new ThrustSystem(connection, delayedScheduler);
         service.submit(thrustSystem);
         OxygenMaskSystem oxygenMaskSystem = new OxygenMaskSystem(connection);
         service.submit(oxygenMaskSystem);
@@ -64,7 +65,8 @@ public class Main {
 
         EventManager eventManager = new EventManager(connection, scheduler);
         service.submit(eventManager);
-        FlightControlSystem flightControlSystem = new FlightControlSystem(connection, eventManager);
+        FlightControlSystem flightControlSystem = new FlightControlSystem(connection,
+                eventManager, delayedScheduler);
         service.submit(flightControlSystem);
     }
 }
