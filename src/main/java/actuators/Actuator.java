@@ -26,7 +26,7 @@ public abstract class Actuator implements Runnable {
         channelOut.exchangeDeclare(Exchanges.SENSOR_INPUT, "direct");
 
         channelReceived = connection.createChannel();
-        channelReceived.exchangeDeclare(Exchanges.SENSOR_RECEIVED, "direct");
+        channelReceived.exchangeDeclare(Exchanges.ACTUATOR_RECEIVED, "direct");
     }
 
     public void run() {
@@ -54,7 +54,7 @@ public abstract class Actuator implements Runnable {
         byte[] id = Arrays.copyOfRange(body, 0, 4);
         byte[] message = Arrays.copyOfRange(body, 4, body.length);
         try {
-            channelReceived.basicPublish(Exchanges.SENSOR_RECEIVED, "", null, id);
+            channelReceived.basicPublish(Exchanges.ACTUATOR_RECEIVED, "", null, id);
         } catch (IOException e) {
             e.printStackTrace();
         }

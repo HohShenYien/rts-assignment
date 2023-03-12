@@ -24,9 +24,9 @@ public class EventManager implements Runnable {
 
     public EventManager(Connection connection, ScheduledExecutorService scheduler) throws IOException {
         channelIn = connection.createChannel();
-        channelIn.exchangeDeclare(Exchanges.SENSOR_RECEIVED, "direct");
+        channelIn.exchangeDeclare(Exchanges.ACTUATOR_RECEIVED, "direct");
         queueNameIn = channelIn.queueDeclare().getQueue();
-        channelIn.queueBind(queueNameIn, Exchanges.SENSOR_RECEIVED, "");
+        channelIn.queueBind(queueNameIn, Exchanges.ACTUATOR_RECEIVED, "");
 
         channelOut = connection.createChannel();
         channelOut.exchangeDeclare(Exchanges.ACTUATOR_INPUT, "direct");
