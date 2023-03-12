@@ -8,7 +8,6 @@ import utils.Sensors;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class HeatingSystem extends Actuator {
     private final ScheduledExecutorService scheduler;
@@ -31,7 +30,7 @@ public class HeatingSystem extends Actuator {
         Formats.printActuator("Heating System", " " + (change < 0 ? "Reducing" : "Raising")
                 + " Temperature by " + Math.abs(change) + "°C");
 
-        scheduler.schedule(() -> publishChange(Sensors.TEMPERATURE,
-                Functions.shortToBytes(change)), 200, TimeUnit.MILLISECONDS);
+        publishChange(Sensors.TEMPERATURE,
+                Functions.shortToBytes(change));
     }
 }
