@@ -1,13 +1,11 @@
 package actuators;
 
-import benchmark.TimeManager;
 import channels.ChannelFactory;
 import channels.InBoundChannel;
 import channels.OutBoundChannel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Delivery;
 import utils.Exchanges;
-import utils.Functions;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -50,16 +48,10 @@ public abstract class Actuator implements Runnable {
         long nowInMillis = System.currentTimeMillis();
 
         byte[] body = delivery.getBody();
-        // first 8 bytes are time in millis
-        byte[] startTimeInMillis = Arrays.copyOfRange(body, 0, 8);
-        long duration = nowInMillis - Functions.bytesToLong(startTimeInMillis);
-        if (duration > 5) {
-            System.out.println("WOI " + delivery.getEnvelope().getRoutingKey());
-        }
-        TimeManager.addDuration(duration);
+
         // next 4 bytes are id
-        byte[] id = Arrays.copyOfRange(body, 8, 12);
-        byte[] message = Arrays.copyOfRange(body, 12, body.length);
+        byte[] id = Arrays.copyOfRange(body, 0, 4);
+        byte[] message = Arrays.copyOfRange(body, 4, body.length);
         try {
             channelReceived.publish(id, "");
         } catch (IOException e) {

@@ -35,8 +35,8 @@ public class Metrics {
         return arrayList.stream().max((o1, o2) -> (int) (o1 - o2)).get();
     }
 
-    public double computeThroughput() {
-        return 1.0 / computeAverage();
+    public int iteration() {
+        return arrayList.size();
     }
 
     public double computeSD() {

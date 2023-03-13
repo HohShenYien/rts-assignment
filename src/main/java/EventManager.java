@@ -51,12 +51,10 @@ public class EventManager implements Runnable {
     public void publishAction(int id, String actuator, byte[] change) {
         try {
             byte[] idInBytes = Functions.intToBytes(id);
-            byte[] timeInBytes = Functions.longToBytes(System.currentTimeMillis());
-            byte[] result = Functions.concatenateByteArrays(timeInBytes,
-                    Functions.concatenateByteArrays(idInBytes, change));
+            byte[] result = Functions.concatenateByteArrays(idInBytes, change);
             // the message sent will be in format millis(8):id(4):result
             channelOut.publish(result, actuator);
-            
+
             checkEventReceived(id, actuator, change);
         } catch (IOException e) {
             e.printStackTrace();

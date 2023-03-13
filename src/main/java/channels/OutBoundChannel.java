@@ -1,6 +1,7 @@
 package channels;
 
 import com.rabbitmq.client.Connection;
+import utils.Functions;
 
 import java.io.IOException;
 
@@ -10,6 +11,8 @@ public class OutBoundChannel extends AbstractChannel {
     }
 
     public void publish(byte[] message, String routeKey) throws IOException {
-        channel.basicPublish(exchangeName, routeKey, null, message);
+        byte[] timeInBytes = Functions.longToBytes(System.currentTimeMillis());
+        byte[] result = Functions.concatenateByteArrays(timeInBytes, message);
+        channel.basicPublish(exchangeName, routeKey, null, result);
     }
 }

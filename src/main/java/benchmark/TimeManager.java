@@ -16,7 +16,6 @@ public class TimeManager {
 
     public static void summary() {
         System.out.println("=".repeat(30) + " BENCHMARKING RESULT " + "=".repeat(30));
-        printResult("Iterations", durations.size());
         System.out.println("-".repeat(20) + " Duration");
         printDuration();
 
@@ -25,16 +24,17 @@ public class TimeManager {
     }
 
     private static void printDuration() {
-        Metrics durationMetrics = Metrics.createLongMetrics(durations, "Duration (ms)");
-        printResult("Total duration", (long) durationMetrics.computeTotal() + "ms");
-        printResult("Minimum duration", (long) durationMetrics.findMin() + " ms");
-        printResult("Maximum duration", (long) durationMetrics.findMax() + " ms");
-        printResult("Average duration", durationMetrics.computeAverage() + " ±(99%) " +
-                durationMetrics.computeConfidenceInterval99() + " ms");
-        printResult("Standard deviation", durationMetrics.computeSD() + " ms");
+        Metrics delayMetrics = Metrics.createLongMetrics(durations, "Delay (ms)");
+        printResult("Iterations", delayMetrics.iteration());
+        printResult("Total duration", (long) delayMetrics.computeTotal() + "ms");
+        printResult("Minimum duration", (long) delayMetrics.findMin() + " ms");
+        printResult("Maximum duration", (long) delayMetrics.findMax() + " ms");
+        printResult("Average duration", delayMetrics.computeAverage() + " ±(99%) " +
+                delayMetrics.computeConfidenceInterval99() + " ms");
+        printResult("Standard deviation", delayMetrics.computeSD() + " ms");
 
-        printResult("Confidence Interval (99%)", durationMetrics.confidenceInterval99Boundary());
-        durationMetrics.displayChart();
+        printResult("Confidence Interval (99%)", delayMetrics.confidenceInterval99Boundary());
+        delayMetrics.displayChart();
     }
 
     private static void printThroughput() {
@@ -42,6 +42,7 @@ public class TimeManager {
                 Metrics.createDoubleMetrics(durations.stream()
                         .filter(aLong -> aLong > 0)
                         .map(aLong -> 1000.0 / aLong).toList(), "Throughput (ops/s)");
+        printResult("Iterations", throughputMetrics.iteration());
         printResult("Minimum throughput", throughputMetrics.findMin() + " ops/s");
         printResult("Maximum throughput", throughputMetrics.findMax() + " ops/s");
         printResult("Average throughput", throughputMetrics.computeAverage() + " ±(99%) " +
