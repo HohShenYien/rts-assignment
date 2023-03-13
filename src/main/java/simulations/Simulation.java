@@ -1,6 +1,7 @@
 package simulations;
 
-import com.rabbitmq.client.Channel;
+import channels.ChannelFactory;
+import channels.OutBoundChannel;
 import com.rabbitmq.client.Connection;
 import utils.Exchanges;
 
@@ -9,15 +10,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public abstract class Simulation implements Runnable {
-    protected final Channel channel;
-    protected final String queueName;
+    protected final OutBoundChannel channel;
+
     protected final ScheduledExecutorService service;
     private boolean firstTime = true;
 
     public Simulation(Connection connection, ScheduledExecutorService service) throws IOException {
-        channel = connection.createChannel();
-        channel.exchangeDeclare(Exchanges.SENSOR_INPUT, "direct");
-        queueName = channel.queueDeclare().getQueue();
+        channel = ChannelFactory.newOutBoundChannel(connection, Exchanges.SENSOR_INPUT);
         this.service = service;
     }
 
@@ -28,7 +27,7 @@ public abstract class Simulation implements Runnable {
 
     protected void publishChange(String outputSensor, byte[] change) {
         try {
-            channel.basicPublish(Exchanges.SENSOR_INPUT, outputSensor, null, change);
+            channel.publish(change, outputSensor);
         } catch (IOException e) {
             e.printStackTrace();
         }

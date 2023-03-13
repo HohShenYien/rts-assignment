@@ -1,42 +1,37 @@
 package sensors;
 
-import com.rabbitmq.client.Channel;
+import channels.ChannelFactory;
+import channels.InBoundChannel;
+import channels.OutBoundChannel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.DeliverCallback;
 import utils.Exchanges;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 public abstract class Sensor implements Runnable {
-    protected Channel channelIn;
-    protected String queueNameIn;
-
-    protected Channel channelOut;
-    protected String queueNameOut;
+    protected InBoundChannel channelIn;
+    protected OutBoundChannel channelOut;
 
     public Sensor(Connection connection) throws IOException, TimeoutException {
-        channelIn = connection.createChannel();
-        channelIn.exchangeDeclare(Exchanges.SENSOR_INPUT, "direct");
-        queueNameIn = channelIn.queueDeclare().getQueue();
-        channelIn.queueBind(queueNameIn, Exchanges.SENSOR_INPUT, getSensorName());
+        channelIn = ChannelFactory.newInBoundChannel(connection, Exchanges.SENSOR_INPUT,
+                List.of(getSensorName()));
 
-        channelOut = connection.createChannel();
-        channelOut.exchangeDeclare(Exchanges.SENSOR_OUTPUT, "direct");
-        queueNameOut = channelOut.queueDeclare().getQueue();
+        channelOut = ChannelFactory.newOutBoundChannel(connection, Exchanges.SENSOR_OUTPUT);
     }
 
     public void run() {
         try {
-            channelIn.basicConsume(queueNameIn, true, onReceive(), consumerTag -> {
-            });
+            channelIn.consume(onReceive());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     protected void publish(byte[] change) throws IOException {
-        channelOut.basicPublish(Exchanges.SENSOR_OUTPUT, getSensorName(), null, change);
+        channelOut.publish(change, getSensorName());
     }
 
     public abstract DeliverCallback onReceive() throws IOException;

@@ -1,4 +1,5 @@
-import com.rabbitmq.client.Channel;
+import channels.ChannelFactory;
+import channels.InBoundChannel;
 import com.rabbitmq.client.Connection;
 import enums.*;
 import utils.*;
@@ -9,8 +10,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class FlightControlSystem implements Runnable {
-    private final Channel channelIn;
-    private final String queueNameIn;
+    private final InBoundChannel channelIn;
 
     private CabinPressure pressure;
     private short altitude;
@@ -23,14 +23,9 @@ public class FlightControlSystem implements Runnable {
 
     public FlightControlSystem(Connection connection, EventManager eventManager,
                                ScheduledExecutorService scheduler) throws IOException {
-        channelIn = connection.createChannel();
-        channelIn.exchangeDeclare(Exchanges.SENSOR_OUTPUT, "direct");
-        queueNameIn = channelIn.queueDeclare().getQueue();
-
-        for (String sensor : List.of(Sensors.WEATHER, Sensors.CABIN_PRESSURE, Sensors.TEMPERATURE,
-                Sensors.ALTITUDE, Sensors.LANDING_MODE)) {
-            channelIn.queueBind(queueNameIn, Exchanges.SENSOR_OUTPUT, sensor);
-        }
+        channelIn = ChannelFactory.newInBoundChannel(connection, Exchanges.SENSOR_OUTPUT,
+                List.of(Sensors.WEATHER, Sensors.CABIN_PRESSURE, Sensors.TEMPERATURE,
+                        Sensors.ALTITUDE, Sensors.LANDING_MODE));
 
         altitude = Commons.STARTING_ALTITUDE;
 
@@ -43,11 +38,9 @@ public class FlightControlSystem implements Runnable {
     @Override
     public void run() {
         try {
-            channelIn.basicConsume(queueNameIn, true, (consumerTag, delivery) -> {
+            channelIn.consume((consumerTag, delivery) -> {
                 byte[] body = delivery.getBody();
                 actOnChange(body, delivery.getEnvelope().getRoutingKey());
-
-            }, consumerTag -> {
             });
         } catch (IOException e) {
             e.printStackTrace();
