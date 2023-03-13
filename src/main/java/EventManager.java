@@ -52,7 +52,7 @@ public class EventManager implements Runnable {
         try {
             byte[] idInBytes = Functions.intToBytes(id);
             byte[] result = Functions.concatenateByteArrays(idInBytes, change);
-            // the message sent will be in format millis(8):id(4):result
+            // the message sent will be in format id(4):result
             channelOut.publish(result, actuator);
 
             checkEventReceived(id, actuator, change);

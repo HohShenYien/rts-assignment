@@ -20,20 +20,18 @@ public class InBoundChannel extends AbstractChannel {
                 consumerTag -> {
                 });
     }
-    
+
     public void bindQueue(String routeKey) throws IOException {
         channel.queueBind(queueName, exchangeName, routeKey);
     }
 
     private void handlerWrapper(DeliverCallback handler, String s, Delivery delivery) throws IOException {
-        long nowInMillis = System.currentTimeMillis();
+        long nowInNano = System.nanoTime();
         byte[] body = delivery.getBody();
         // first 8 bytes are time in millis
         byte[] startTimeInMillis = Arrays.copyOfRange(body, 0, 8);
-        long duration = nowInMillis - Functions.bytesToLong(startTimeInMillis);
-        if (duration > 5) {
-            System.out.println("WOI " + delivery.getEnvelope().getRoutingKey() + "-" + delivery.getEnvelope().getExchange());
-        }
+        long duration = nowInNano - Functions.bytesToLong(startTimeInMillis);
+        
         TimeManager.addDuration(duration);
 
         Delivery newDelivery = new Delivery(delivery.getEnvelope(), delivery.getProperties(),

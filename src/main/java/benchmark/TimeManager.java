@@ -5,12 +5,12 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class TimeManager {
-    private static final ArrayList<Long> durations = new ArrayList<>();
+    private static final ArrayList<Double> durations = new ArrayList<>();
     private static final Lock lock = new ReentrantLock();
 
-    public static void addDuration(long durationsInMs) {
+    public static void addDuration(long durationsInNano) {
         lock.lock();
-        durations.add(durationsInMs);
+        durations.add(durationsInNano / 1_000_000.0);
         lock.unlock();
     }
 
@@ -19,21 +19,22 @@ public class TimeManager {
         System.out.println("-".repeat(20) + " Duration");
         printDuration();
 
-        System.out.println("\n" + "-".repeat(20) + " Throughput (0 duration is removed)");
+        System.out.println("\n" + "-".repeat(20) + " Throughput");
         printThroughput();
     }
 
     private static void printDuration() {
-        Metrics delayMetrics = Metrics.createLongMetrics(durations, "Delay (ms)");
+        Metrics delayMetrics = Metrics.createDoubleMetrics(durations, "Delay (ms)");
         printResult("Iterations", delayMetrics.iteration());
-        printResult("Total duration", (long) delayMetrics.computeTotal() + "ms");
-        printResult("Minimum duration", (long) delayMetrics.findMin() + " ms");
-        printResult("Maximum duration", (long) delayMetrics.findMax() + " ms");
+        printResult("Total duration", delayMetrics.computeTotal() + "ms");
+        printResult("Minimum duration", delayMetrics.findMin() + " ms");
+        printResult("Maximum duration", delayMetrics.findMax() + " ms");
         printResult("Average duration", delayMetrics.computeAverage() + " ±(99%) " +
                 delayMetrics.computeConfidenceInterval99() + " ms");
         printResult("Standard deviation", delayMetrics.computeSD() + " ms");
 
-        printResult("Confidence Interval (99%)", delayMetrics.confidenceInterval99Boundary());
+        printResult("Confidence Interval (99%)", delayMetrics.confidenceInterval99Boundary() +
+                " ms");
         delayMetrics.displayChart();
     }
 
@@ -49,7 +50,8 @@ public class TimeManager {
                 throughputMetrics.computeConfidenceInterval99() + " ops/s");
         printResult("Standard deviation", throughputMetrics.computeSD() + " ops/s");
 
-        printResult("Confidence Interval (99%)", throughputMetrics.confidenceInterval99Boundary());
+        printResult("Confidence Interval (99%)",
+                throughputMetrics.confidenceInterval99Boundary() + " ops/s");
         throughputMetrics.displayChart();
     }
 

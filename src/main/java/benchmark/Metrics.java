@@ -15,24 +15,24 @@ public class Metrics {
         return new Metrics(inputList, name);
     }
 
-    public static Metrics createLongMetrics(List<Long> inputList, String name) {
-        return new Metrics((List<Double>) inputList.stream().map(Long::doubleValue).toList(), name);
-    }
-
     public double computeTotal() {
         return arrayList.stream().reduce(0D, Double::sum);
     }
 
     public double computeAverage() {
-        return (double) computeTotal() / arrayList.size();
+        return computeTotal() / arrayList.size();
     }
 
     public double findMin() {
-        return arrayList.stream().min((o1, o2) -> (int) (o1 - o2)).get();
+        double min = arrayList.get(0);
+        return arrayList.stream().reduce(min,
+                (aDouble, aDouble2) -> aDouble2 < aDouble ? aDouble2 : aDouble);
     }
 
     public double findMax() {
-        return arrayList.stream().max((o1, o2) -> (int) (o1 - o2)).get();
+        double max = arrayList.get(0);
+        return arrayList.stream().reduce(max,
+                (aDouble, aDouble2) -> aDouble2 > aDouble ? aDouble2 : aDouble);
     }
 
     public int iteration() {
@@ -41,7 +41,7 @@ public class Metrics {
 
     public double computeSD() {
         double squareDiff = 0;
-        double mean = (double) computeTotal() / arrayList.size();
+        double mean = computeTotal() / arrayList.size();
 
         for (double duration : arrayList) {
             squareDiff += Math.pow(duration - mean, 2);
