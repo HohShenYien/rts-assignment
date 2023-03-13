@@ -1,7 +1,9 @@
 package actuators;
 
 import benchmark.TimeManager;
-import com.rabbitmq.client.Channel;
+import channels.ChannelFactory;
+import channels.InBoundChannel;
+import channels.OutBoundChannel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Delivery;
 import utils.Exchanges;
@@ -9,32 +11,26 @@ import utils.Functions;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 public abstract class Actuator implements Runnable {
-    private final Channel channelIn;
-    private final String queueNameIn;
+    private final InBoundChannel channelIn;
 
-    private final Channel channelOut;
-    private final Channel channelReceived;
+    private final OutBoundChannel channelOut;
+    private final OutBoundChannel channelReceived;
 
     public Actuator(Connection connection) throws IOException {
-        channelIn = connection.createChannel();
-        channelIn.exchangeDeclare(Exchanges.ACTUATOR_INPUT, "direct");
-        queueNameIn = channelIn.queueDeclare().getQueue();
+        channelIn = ChannelFactory.newInBoundChannel(connection, Exchanges.ACTUATOR_INPUT,
+                List.of(getActuatorName()));
 
-        channelIn.queueBind(queueNameIn, Exchanges.ACTUATOR_INPUT, getActuatorName());
-
-        channelOut = connection.createChannel();
-        channelOut.exchangeDeclare(Exchanges.SENSOR_INPUT, "direct");
-
-        channelReceived = connection.createChannel();
-        channelReceived.exchangeDeclare(Exchanges.SENSOR_RECEIVED, "direct");
+        channelOut = ChannelFactory.newOutBoundChannel(connection, Exchanges.SENSOR_INPUT);
+        channelReceived = ChannelFactory.newOutBoundChannel(connection,
+                Exchanges.ACTUATOR_RECEIVED);
     }
 
     public void run() {
         try {
-            channelIn.basicConsume(queueNameIn, true, this::onReceive, consumerTag -> {
-            });
+            channelIn.consume(this::onReceive);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -42,7 +38,7 @@ public abstract class Actuator implements Runnable {
 
     protected void publishChange(String outputSensor, byte[] change) {
         try {
-            channelOut.basicPublish(Exchanges.SENSOR_INPUT, outputSensor, null, change);
+            channelOut.publish(change, outputSensor);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -65,7 +61,7 @@ public abstract class Actuator implements Runnable {
         byte[] id = Arrays.copyOfRange(body, 8, 12);
         byte[] message = Arrays.copyOfRange(body, 12, body.length);
         try {
-            channelReceived.basicPublish(Exchanges.SENSOR_RECEIVED, "", null, id);
+            channelReceived.publish(id, "");
         } catch (IOException e) {
             e.printStackTrace();
         }

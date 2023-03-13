@@ -1,4 +1,6 @@
-import com.rabbitmq.client.Channel;
+import channels.ChannelFactory;
+import channels.InBoundChannel;
+import channels.OutBoundChannel;
 import com.rabbitmq.client.Connection;
 import utils.Colors;
 import utils.Exchanges;
@@ -7,29 +9,25 @@ import utils.Log;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class EventManager implements Runnable {
-    private final Channel channelIn;
-    private final String queueNameIn;
+    private final InBoundChannel channelIn;
 
-    private final Channel channelOut;
+    private final OutBoundChannel channelOut;
 
     private final ScheduledExecutorService scheduler;
     private final HashMap<Integer, Log> logStore;
     private final Lock logLock;
 
     public EventManager(Connection connection, ScheduledExecutorService scheduler) throws IOException {
-        channelIn = connection.createChannel();
-        channelIn.exchangeDeclare(Exchanges.SENSOR_RECEIVED, "direct");
-        queueNameIn = channelIn.queueDeclare().getQueue();
-        channelIn.queueBind(queueNameIn, Exchanges.SENSOR_RECEIVED, "");
-
-        channelOut = connection.createChannel();
-        channelOut.exchangeDeclare(Exchanges.ACTUATOR_INPUT, "direct");
+        channelIn = ChannelFactory.newInBoundChannel(connection, Exchanges.ACTUATOR_RECEIVED,
+                List.of(""));
+        channelOut = ChannelFactory.newOutBoundChannel(connection, Exchanges.ACTUATOR_INPUT);
 
         this.scheduler = scheduler;
         logStore = new HashMap<>();
@@ -39,12 +37,11 @@ public class EventManager implements Runnable {
     @Override
     public void run() {
         try {
-            channelIn.basicConsume(queueNameIn, true, (consumerTag, delivery) -> {
+            channelIn.consume((consumerTag, delivery) -> {
                 byte[] body = delivery.getBody();
                 int id = Functions.bytesToInt(body);
 
                 logReceived(id);
-            }, consumerTag -> {
             });
         } catch (IOException e) {
             e.printStackTrace();
@@ -58,7 +55,8 @@ public class EventManager implements Runnable {
             byte[] result = Functions.concatenateByteArrays(timeInBytes,
                     Functions.concatenateByteArrays(idInBytes, change));
             // the message sent will be in format millis(8):id(4):result
-            channelOut.basicPublish(Exchanges.ACTUATOR_INPUT, actuator, null, result);
+            channelOut.publish(result, actuator);
+            
             checkEventReceived(id, actuator, change);
         } catch (IOException e) {
             e.printStackTrace();
