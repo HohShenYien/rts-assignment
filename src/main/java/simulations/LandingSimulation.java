@@ -36,6 +36,6 @@ public class LandingSimulation extends Simulation {
     @Override
     // Plane lands after 12s
     protected int getIntervalInMillis() {
-        return 12_000;
+        return 30_000;
     }
 }

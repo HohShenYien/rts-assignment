@@ -25,7 +25,7 @@ public class TimeManager {
     }
 
     private static void printDuration() {
-        Metrics durationMetrics = Metrics.createLongMetrics(durations);
+        Metrics durationMetrics = Metrics.createLongMetrics(durations, "Duration (ms)");
         printResult("Total duration", (long) durationMetrics.computeTotal() + "ms");
         printResult("Minimum duration", (long) durationMetrics.findMin() + " ms");
         printResult("Maximum duration", (long) durationMetrics.findMax() + " ms");
@@ -34,13 +34,14 @@ public class TimeManager {
         printResult("Standard deviation", durationMetrics.computeSD() + " ms");
 
         printResult("Confidence Interval (99%)", durationMetrics.confidenceInterval99Boundary());
+        durationMetrics.displayChart();
     }
 
     private static void printThroughput() {
         Metrics throughputMetrics =
                 Metrics.createDoubleMetrics(durations.stream()
                         .filter(aLong -> aLong > 0)
-                        .map(aLong -> 1000.0 / aLong).toList());
+                        .map(aLong -> 1000.0 / aLong).toList(), "Throughput (ops/s)");
         printResult("Minimum throughput", throughputMetrics.findMin() + " ops/s");
         printResult("Maximum throughput", throughputMetrics.findMax() + " ops/s");
         printResult("Average throughput", throughputMetrics.computeAverage() + " ±(99%) " +
@@ -48,6 +49,7 @@ public class TimeManager {
         printResult("Standard deviation", throughputMetrics.computeSD() + " ops/s");
 
         printResult("Confidence Interval (99%)", throughputMetrics.confidenceInterval99Boundary());
+        throughputMetrics.displayChart();
     }
 
     private static <T> void printResult(String key, T value) {

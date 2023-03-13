@@ -4,17 +4,19 @@ import java.util.List;
 
 public class Metrics {
     private final List<Double> arrayList;
+    private final IterationChart timeChart;
 
-    private Metrics(List<Double> inputList) {
+    private Metrics(List<Double> inputList, String name) {
         this.arrayList = inputList.stream().toList();
+        this.timeChart = new IterationChart(this.arrayList, name);
     }
 
-    public static Metrics createDoubleMetrics(List<Double> inputList) {
-        return new Metrics(inputList);
+    public static Metrics createDoubleMetrics(List<Double> inputList, String name) {
+        return new Metrics(inputList, name);
     }
 
-    public static Metrics createLongMetrics(List<Long> inputList) {
-        return new Metrics((List<Double>) inputList.stream().map(Long::doubleValue).toList());
+    public static Metrics createLongMetrics(List<Long> inputList, String name) {
+        return new Metrics((List<Double>) inputList.stream().map(Long::doubleValue).toList(), name);
     }
 
     public double computeTotal() {
@@ -57,5 +59,9 @@ public class Metrics {
         return "[" + (computeAverage() - computeConfidenceInterval99()) + "," +
                 (computeAverage() + computeConfidenceInterval99()) +
                 "]";
+    }
+
+    public void displayChart() {
+        this.timeChart.display();
     }
 }

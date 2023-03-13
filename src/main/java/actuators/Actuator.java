@@ -57,6 +57,9 @@ public abstract class Actuator implements Runnable {
         // first 8 bytes are time in millis
         byte[] startTimeInMillis = Arrays.copyOfRange(body, 0, 8);
         long duration = nowInMillis - Functions.bytesToLong(startTimeInMillis);
+        if (duration > 5) {
+            System.out.println("WOI " + delivery.getEnvelope().getRoutingKey());
+        }
         TimeManager.addDuration(duration);
         // next 4 bytes are id
         byte[] id = Arrays.copyOfRange(body, 8, 12);
