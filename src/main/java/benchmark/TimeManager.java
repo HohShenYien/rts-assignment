@@ -6,7 +6,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class TimeManager {
     private static final ArrayList<Double> durations = new ArrayList<>();
-    private static final ArrayList<String> highValues = new ArrayList<>();
+    //    private static final ArrayList<String> highValues = new ArrayList<>();
     private static final Lock lock = new ReentrantLock();
 
     public static void addDuration(long durationsInNano) {
@@ -15,11 +15,11 @@ public class TimeManager {
         lock.unlock();
     }
 
-    public static void addHighValues(String highValue) {
-        lock.lock();
-        highValues.add(highValue);
-        lock.unlock();
-    }
+//    public static void addHighValues(String highValue) {
+//        lock.lock();
+//        highValues.add(highValue);
+//        lock.unlock();
+//    }
 
     public static void summary() {
         System.out.println("=".repeat(30) + " BENCHMARKING RESULT " + "=".repeat(30));
