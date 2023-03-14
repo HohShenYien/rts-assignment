@@ -15,7 +15,7 @@ public class WeatherSensor extends Sensor {
     }
 
     @Override
-    public DeliverCallback onReceive() throws IOException {
+    public DeliverCallback onReceive() {
         return (s, delivery) -> {
             Weather weather = Weather.fromByte(delivery.getBody()[0]);
             Formats.printSensor("Weather Sensor", " New Weather detected: " + weather);

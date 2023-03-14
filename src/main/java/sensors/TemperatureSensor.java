@@ -28,8 +28,8 @@ public class TemperatureSensor extends Sensor {
 
             temperature += changes;
 
-            Formats.printSensor("Temperature Sensor", " New Temperature Detected: " + temperature +
-                    "°C");
+            Formats.printSensor("Temperature Sensor", " New Temperature Detected: " +
+                    temperature + "°C");
 
             publish(Functions.shortToBytes(temperature));
         };

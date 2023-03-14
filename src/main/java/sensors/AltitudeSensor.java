@@ -19,7 +19,7 @@ public class AltitudeSensor extends Sensor {
     }
 
     @Override
-    public DeliverCallback onReceive() throws IOException {
+    public DeliverCallback onReceive() {
         return (consumerTag, delivery) -> {
             short changes = Functions.bytesToShort(delivery.getBody());
             if (changes == 0) {
