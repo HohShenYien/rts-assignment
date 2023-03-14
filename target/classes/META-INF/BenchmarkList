@@ -1,3 +1,9 @@
+JMH S 31 jmh.HashMaps.TestMapContainsKey S 66 jmh.HashMaps.jmh_generated.TestMapContainsKey_testContains_jmhTest S 12 testContains S 11 AverageTime E A 1 1 1 E I 1 2 E E I 2 10 E E I 1 1 E E E E E E U 12 MILLISECONDS E T 5 100 s 
+JMH S 23 jmh.HashMaps.TestMapGet S 53 jmh.HashMaps.jmh_generated.TestMapGet_testGet_jmhTest S 7 testGet S 11 AverageTime E A 1 1 1 E I 1 2 E E I 2 10 E E I 1 1 E E E E E E U 12 MILLISECONDS E T 5 100 s 
+JMH S 23 jmh.HashMaps.TestMapPut S 53 jmh.HashMaps.jmh_generated.TestMapPut_testAdd_jmhTest S 7 testAdd S 11 AverageTime E A 1 1 1 E I 1 2 E E I 2 10 E E I 1 1 E E E E E E U 12 MILLISECONDS E T 5 100 s 
+JMH S 31 jmh.TreeMaps.TestMapContainsKey S 66 jmh.TreeMaps.jmh_generated.TestMapContainsKey_testContains_jmhTest S 12 testContains S 11 AverageTime E A 1 1 1 E I 1 2 E E I 2 10 E E I 1 1 E E E E E E U 12 MILLISECONDS E T 5 100 s 
+JMH S 23 jmh.TreeMaps.TestMapGet S 53 jmh.TreeMaps.jmh_generated.TestMapGet_testGet_jmhTest S 7 testGet S 11 AverageTime E A 1 1 1 E I 1 2 E E I 2 10 E E I 1 1 E E E E E E U 12 MILLISECONDS E T 5 100 s 
+JMH S 23 jmh.TreeMaps.TestMapPut S 53 jmh.TreeMaps.jmh_generated.TestMapPut_testAdd_jmhTest S 7 testAdd S 11 AverageTime E A 1 1 1 E I 1 2 E E I 2 10 E E I 1 1 E E E E E E U 12 MILLISECONDS E T 5 100 s 
 JMH S 27 jmh.maps.TestMapContainsKey S 62 jmh.maps.jmh_generated.TestMapContainsKey_testContains_jmhTest S 12 testContains S 11 AverageTime E A 1 1 1 E I 1 2 E E I 2 10 E E I 1 1 E E E E E E U 12 MILLISECONDS E T 5 100 s 
 JMH S 19 jmh.maps.TestMapGet S 49 jmh.maps.jmh_generated.TestMapGet_testAdd_jmhTest S 7 testAdd S 11 AverageTime E A 1 1 1 E I 1 2 E E I 2 10 E E I 1 1 E E E E E E U 12 MILLISECONDS E T 5 100 s 
 JMH S 19 jmh.maps.TestMapPut S 49 jmh.maps.jmh_generated.TestMapPut_testAdd_jmhTest S 7 testAdd S 11 AverageTime E A 1 1 1 E I 1 2 E E I 2 10 E E I 1 1 E E E E E E U 12 MILLISECONDS E T 5 100 s 

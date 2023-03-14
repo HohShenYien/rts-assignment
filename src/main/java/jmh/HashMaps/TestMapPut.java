@@ -18,7 +18,6 @@ public class TestMapPut {
         logStore = new HashMap<>();
     }
 
-    //    @Threads(10)
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @Warmup(iterations = 2)

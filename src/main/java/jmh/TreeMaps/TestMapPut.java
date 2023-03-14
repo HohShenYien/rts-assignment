@@ -18,7 +18,6 @@ public class TestMapPut {
         logStore = new TreeMap<>();
     }
 
-    //    @Threads(10)
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @Warmup(iterations = 2)
