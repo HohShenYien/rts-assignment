@@ -23,7 +23,7 @@ public class TimeManager {
 
     public static void summary() {
         System.out.println("=".repeat(30) + " BENCHMARKING RESULT " + "=".repeat(30));
-        System.out.println("-".repeat(20) + " Duration");
+        System.out.println("-".repeat(20) + " Delay");
         printDuration();
 
         System.out.println("\n" + "-".repeat(20) + " Throughput");
@@ -38,10 +38,10 @@ public class TimeManager {
     private static void printDuration() {
         Metrics delayMetrics = Metrics.createDoubleMetrics(durations, "Delay (ms)");
         printResult("Iterations", delayMetrics.iteration());
-        printResult("Total duration", delayMetrics.computeTotal() + "ms");
-        printResult("Minimum duration", delayMetrics.findMin() + " ms");
-        printResult("Maximum duration", delayMetrics.findMax() + " ms");
-        printResult("Average duration", delayMetrics.computeAverage() + " ±(99%) " +
+        printResult("Total delay", delayMetrics.computeTotal() + "ms");
+        printResult("Minimum delay", delayMetrics.findMin() + " ms");
+        printResult("Maximum delay", delayMetrics.findMax() + " ms");
+        printResult("Average delay", delayMetrics.computeAverage() + " ±(99%) " +
                 delayMetrics.computeConfidenceInterval99() + " ms");
         printResult("Standard deviation", delayMetrics.computeSD() + " ms");
 
