@@ -15,7 +15,7 @@ public class LandingSensor extends Sensor {
     }
 
     @Override
-    public DeliverCallback onReceive() throws IOException {
+    public DeliverCallback onReceive() {
         return (s, delivery) -> {
             PlaneMode mode = PlaneMode.fromByte(delivery.getBody()[0]);
             Formats.printSensor("Landing Mode Sensor", " New Mode Detected: " + mode);

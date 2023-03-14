@@ -15,7 +15,7 @@ public class CabinPressureSensor extends Sensor {
     }
 
     @Override
-    public DeliverCallback onReceive() throws IOException {
+    public DeliverCallback onReceive() {
         return (consumerTag, delivery) -> {
             CabinPressure pressure = CabinPressure.fromByte(delivery.getBody()[0]);
 
