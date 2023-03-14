@@ -4,6 +4,7 @@ import benchmark.TimeManager;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.DeliverCallback;
 import com.rabbitmq.client.Delivery;
+import com.rabbitmq.client.Envelope;
 import utils.Functions;
 
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class InBoundChannel extends AbstractChannel {
     }
 
     public void bindQueue(String routeKey) throws IOException {
-        channel.queueBind(queueName, exchangeName, routeKey);
+        channel.queueBind(queueName, "direct", exchangeName + ":" + routeKey);
     }
 
     private void handlerWrapper(DeliverCallback handler, String s, Delivery delivery) throws IOException {
@@ -38,8 +39,13 @@ public class InBoundChannel extends AbstractChannel {
 //            Envelope envelope = delivery.getEnvelope();
 //            TimeManager.addHighValues(envelope.getExchange() + " | " + envelope.getRoutingKey() + " : " + duration / 1_000_000 + "ms");
 //        }
+        Envelope oldEnvelope = delivery.getEnvelope();
+        String[] splitKeys = oldEnvelope.getRoutingKey().split(":");
+        String newRoutingKey = splitKeys.length > 1 ? splitKeys[1] : "";
+        Envelope newEnvelope = new Envelope(oldEnvelope.getDeliveryTag(),
+                oldEnvelope.isRedeliver(), oldEnvelope.getExchange(), newRoutingKey);
 
-        Delivery newDelivery = new Delivery(delivery.getEnvelope(), delivery.getProperties(),
+        Delivery newDelivery = new Delivery(newEnvelope, delivery.getProperties(),
                 Arrays.copyOfRange(body, 8, body.length));
 
         handler.handle(s, newDelivery);

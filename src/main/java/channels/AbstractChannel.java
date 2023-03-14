@@ -12,7 +12,7 @@ public abstract class AbstractChannel {
 
     public AbstractChannel(Connection connection, String exchangeName) throws IOException {
         channel = connection.createChannel();
-        channel.exchangeDeclare(exchangeName, "direct");
+        channel.exchangeDeclare("direct", "direct");
         queueName = channel.queueDeclare().getQueue();
         this.exchangeName = exchangeName;
     }

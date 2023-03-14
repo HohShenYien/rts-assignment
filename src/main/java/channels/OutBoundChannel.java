@@ -13,6 +13,6 @@ public class OutBoundChannel extends AbstractChannel {
     public void publish(byte[] message, String routeKey) throws IOException {
         byte[] timeInBytes = Functions.longToBytes(System.nanoTime());
         byte[] result = Functions.concatenateByteArrays(timeInBytes, message);
-        channel.basicPublish(exchangeName, routeKey, null, result);
+        channel.basicPublish("direct", exchangeName + ":" + routeKey, null, result);
     }
 }
