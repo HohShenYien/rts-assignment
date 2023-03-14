@@ -6,11 +6,18 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class TimeManager {
     private static final ArrayList<Double> durations = new ArrayList<>();
+    private static final ArrayList<String> highValues = new ArrayList<>();
     private static final Lock lock = new ReentrantLock();
 
     public static void addDuration(long durationsInNano) {
         lock.lock();
         durations.add(durationsInNano / 1_000_000.0);
+        lock.unlock();
+    }
+
+    public static void addHighValues(String highValue) {
+        lock.lock();
+        highValues.add(highValue);
         lock.unlock();
     }
 
@@ -21,6 +28,11 @@ public class TimeManager {
 
         System.out.println("\n" + "-".repeat(20) + " Throughput");
         printThroughput();
+
+//        System.out.println("\n" + "-".repeat(20) + " High Values");
+//        for (String highValue : highValues) {
+//            System.out.println(highValue);
+//        }
     }
 
     private static void printDuration() {

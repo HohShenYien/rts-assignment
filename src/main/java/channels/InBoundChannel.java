@@ -29,10 +29,15 @@ public class InBoundChannel extends AbstractChannel {
         long nowInNano = System.nanoTime();
         byte[] body = delivery.getBody();
         // first 8 bytes are time in millis
-        byte[] startTimeInMillis = Arrays.copyOfRange(body, 0, 8);
-        long duration = nowInNano - Functions.bytesToLong(startTimeInMillis);
-        
+        byte[] startTimeInNano = Arrays.copyOfRange(body, 0, 8);
+        long duration = nowInNano - Functions.bytesToLong(startTimeInNano);
+
         TimeManager.addDuration(duration);
+
+//        if (duration >= 3_000_000) {
+//            Envelope envelope = delivery.getEnvelope();
+//            TimeManager.addHighValues(envelope.getExchange() + " | " + envelope.getRoutingKey() + " : " + duration / 1_000_000 + "ms");
+//        }
 
         Delivery newDelivery = new Delivery(delivery.getEnvelope(), delivery.getProperties(),
                 Arrays.copyOfRange(body, 8, body.length));
