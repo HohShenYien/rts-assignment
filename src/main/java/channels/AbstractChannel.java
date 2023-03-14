@@ -15,5 +15,6 @@ public abstract class AbstractChannel {
         channel.exchangeDeclare(exchangeName, "fanout");
         queueName = channel.queueDeclare().getQueue();
         this.exchangeName = exchangeName;
+        channel.queueBind(queueName, exchangeName, "");
     }
 }
