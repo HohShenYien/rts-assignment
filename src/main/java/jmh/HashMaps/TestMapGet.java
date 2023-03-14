@@ -1,11 +1,10 @@
-package jmh.maps;
+package jmh.HashMaps;
 
 import org.openjdk.jmh.annotations.*;
 import utils.Actuators;
 import utils.Functions;
 import utils.Log;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -14,14 +13,10 @@ import java.util.concurrent.TimeUnit;
 public class TestMapGet {
     public Map<Integer, Log> logStore;
 
-    public static void main(String[] args) throws IOException {
-        org.openjdk.jmh.Main.main(args);
-    }
-
     @Setup(Level.Trial)
     public void setUp() {
         logStore = new HashMap<>();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1000; i++) {
             Log log = new Log(Functions.intToBytes(Functions.getRandom(-5, 5)),
                     Actuators.HEATING_SYSTEM, false);
             logStore.put(i, log);
@@ -38,7 +33,7 @@ public class TestMapGet {
     @Timeout(time = 100)
     public void testGet() {
         // getting back everything out
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1000; i++) {
             logStore.get(i);
         }
     }

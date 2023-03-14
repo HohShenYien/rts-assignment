@@ -1,4 +1,4 @@
-package jmh.maps;
+package jmh.HashMaps;
 
 import org.openjdk.jmh.annotations.*;
 import utils.Actuators;

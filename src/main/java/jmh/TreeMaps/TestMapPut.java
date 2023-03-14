@@ -1,12 +1,12 @@
-package jmh.HashMaps;
+package jmh.TreeMaps;
 
 import org.openjdk.jmh.annotations.*;
 import utils.Actuators;
 import utils.Functions;
 import utils.Log;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 @State(Scope.Benchmark)
@@ -15,7 +15,7 @@ public class TestMapPut {
 
     @Setup(Level.Invocation)
     public void setUp() {
-        logStore = new HashMap<>();
+        logStore = new TreeMap<>();
     }
 
     //    @Threads(10)
