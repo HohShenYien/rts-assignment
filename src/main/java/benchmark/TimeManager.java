@@ -23,7 +23,7 @@ public class TimeManager {
 
     public static void summary() {
         System.out.println("=".repeat(30) + " BENCHMARKING RESULT " + "=".repeat(30));
-        System.out.println("-".repeat(20) + " Delay");
+        System.out.println("-".repeat(20) + " Latency");
         printDuration();
 
         System.out.println("\n" + "-".repeat(20) + " Throughput");
@@ -36,12 +36,12 @@ public class TimeManager {
     }
 
     private static void printDuration() {
-        Metrics delayMetrics = Metrics.createDoubleMetrics(durations, "Delay (ms)");
+        Metrics delayMetrics = Metrics.createDoubleMetrics(durations, "Latency (ms)");
         printResult("Iterations", delayMetrics.iteration());
-        printResult("Total delay", delayMetrics.computeTotal() + "ms");
-        printResult("Minimum delay", delayMetrics.findMin() + " ms");
-        printResult("Maximum delay", delayMetrics.findMax() + " ms");
-        printResult("Average delay", delayMetrics.computeAverage() + " ±(99%) " +
+        printResult("Total latency", delayMetrics.computeTotal() + "ms");
+        printResult("Minimum latency", delayMetrics.findMin() + " ms");
+        printResult("Maximum latency", delayMetrics.findMax() + " ms");
+        printResult("Average latency", delayMetrics.computeAverage() + " ±(99%) " +
                 delayMetrics.computeConfidenceInterval99() + " ms");
         printResult("Standard deviation", delayMetrics.computeSD() + " ms");
 
