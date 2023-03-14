@@ -12,9 +12,8 @@ public abstract class AbstractChannel {
 
     public AbstractChannel(Connection connection, String exchangeName) throws IOException {
         channel = connection.createChannel();
-        channel.exchangeDeclare(exchangeName, "fanout");
+        channel.exchangeDeclare("Topic", "topic");
         queueName = channel.queueDeclare().getQueue();
         this.exchangeName = exchangeName;
-        channel.queueBind(queueName, exchangeName, "");
     }
 }

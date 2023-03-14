@@ -24,8 +24,7 @@ public class FlightControlSystem implements Runnable {
     public FlightControlSystem(Connection connection, EventManager eventManager,
                                ScheduledExecutorService scheduler) throws IOException {
         channelIn = ChannelFactory.newInBoundChannel(connection, Exchanges.SENSOR_OUTPUT,
-                List.of(Sensors.WEATHER, Sensors.CABIN_PRESSURE, Sensors.TEMPERATURE,
-                        Sensors.ALTITUDE, Sensors.LANDING_MODE));
+                List.of("*"));
 
         altitude = Commons.STARTING_ALTITUDE;
 

@@ -8,17 +8,11 @@ import com.rabbitmq.client.Envelope;
 import utils.Functions;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 public class InBoundChannel extends AbstractChannel {
-    private final Set<String> routeKeys;
-
     public InBoundChannel(Connection connection, String exchangeName) throws IOException {
         super(connection, exchangeName);
-        routeKeys = new HashSet<>();
     }
 
     public void consume(DeliverCallback handler) throws IOException {
@@ -28,21 +22,12 @@ public class InBoundChannel extends AbstractChannel {
     }
 
     public void bindQueue(String routeKey) throws IOException {
-//        channel.queueBind(queueName, exchangeName, routeKey);
-        routeKeys.add(routeKey);
+        channel.queueBind(queueName, "Topic", exchangeName + "." + routeKey);
     }
 
     private void handlerWrapper(DeliverCallback handler, String s, Delivery delivery) throws IOException {
         long nowInNano = System.nanoTime();
         byte[] body = delivery.getBody();
-
-        short routeKeySize = Functions.bytesToShort(Arrays.copyOfRange(body, 8, 12));
-        String routeKey = new String(Arrays.copyOfRange(body, 10, 10 + routeKeySize),
-                StandardCharsets.UTF_8);
-
-        if (!routeKeys.contains(routeKey)) {
-            return;
-        }
 
         // first 8 bytes are time in millis
         byte[] startTimeInNano = Arrays.copyOfRange(body, 0, 8);
@@ -51,11 +36,13 @@ public class InBoundChannel extends AbstractChannel {
         TimeManager.addDuration(duration);
 
         Envelope messageEnvelope = delivery.getEnvelope();
+        String[] routeKeys = messageEnvelope.getRoutingKey().split("\\.");
+        String routeKey = routeKeys.length > 1 ? routeKeys[1] : "";
         Envelope newEnvelope = new Envelope(messageEnvelope.getDeliveryTag(),
                 messageEnvelope.isRedeliver(), messageEnvelope.getExchange(), routeKey);
 
         Delivery newDelivery = new Delivery(newEnvelope, delivery.getProperties(),
-                Arrays.copyOfRange(body, 10 + routeKeySize, body.length));
+                Arrays.copyOfRange(body, 8, body.length));
 
         handler.handle(s, newDelivery);
     }
