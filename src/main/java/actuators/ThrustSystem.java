@@ -31,6 +31,7 @@ public class ThrustSystem extends Actuator {
                 "Raising" : "Lowering") + " the altitude by " + Math.abs(change) +
                 "m");
 
-        scheduler.schedule(() -> publishChange(Sensors.ALTITUDE, Functions.shortToBytes(change)), 200, TimeUnit.MILLISECONDS);
+        scheduler.schedule(() -> publishChange(Sensors.ALTITUDE, Functions.shortToBytes(change)),
+                50, TimeUnit.MILLISECONDS);
     }
 }

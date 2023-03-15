@@ -1,3 +1,4 @@
+import EventManager.EventManager;
 import actuators.*;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -28,6 +29,12 @@ public class Main {
         System.out.println(Functions.formatColorReset(Colors.BLACK + Colors.YELLOW_BACKGROUND +
                 " ======== Simulation begin ======== "));
 
+        EventManager eventManager = new EventManager(connection, scheduler);
+        service.submit(eventManager);
+        FlightControlSystem flightControlSystem = new FlightControlSystem(connection,
+                eventManager, delayedScheduler);
+        service.submit(flightControlSystem);
+
         TemperatureSensor temperatureSensor = new TemperatureSensor(connection);
         service.submit(temperatureSensor);
         HeatingSystem heatingSystem = new HeatingSystem(connection, delayedScheduler);
@@ -51,7 +58,7 @@ public class Main {
         service.submit(landingSensor);
         LandingGearSystem landingGearSystem = new LandingGearSystem(connection);
         service.submit(landingGearSystem);
-        BrakeSystem brakeSystem = new BrakeSystem(connection, service);
+        BrakeSystem brakeSystem = new BrakeSystem(connection, service, eventManager);
         service.submit(brakeSystem);
         LandingSimulation landingSimulation = new LandingSimulation(connection, scheduler);
         service.submit(landingSimulation);
@@ -62,11 +69,5 @@ public class Main {
         service.submit(tailFlagSystem);
         WeatherSimulation weatherSimulation = new WeatherSimulation(connection, scheduler);
         service.submit(weatherSimulation);
-
-        EventManager eventManager = new EventManager(connection, scheduler);
-        service.submit(eventManager);
-        FlightControlSystem flightControlSystem = new FlightControlSystem(connection,
-                eventManager, delayedScheduler);
-        service.submit(flightControlSystem);
     }
 }

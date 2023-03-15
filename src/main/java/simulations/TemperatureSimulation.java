@@ -36,6 +36,6 @@ public class TemperatureSimulation extends Simulation {
 
     @Override
     protected int getIntervalInMillis() {
-        return Functions.getRandom(1, 3) * 1000;
+        return Functions.getRandom(1, 3) * 50;
     }
 }

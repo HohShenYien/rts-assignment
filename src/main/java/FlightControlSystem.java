@@ -1,3 +1,4 @@
+import EventManager.EventManager;
 import channels.ChannelFactory;
 import channels.InBoundChannel;
 import com.rabbitmq.client.Connection;

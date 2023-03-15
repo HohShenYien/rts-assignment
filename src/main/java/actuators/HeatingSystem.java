@@ -32,6 +32,6 @@ public class HeatingSystem extends Actuator {
                 + " Temperature by " + Math.abs(change) + "°C");
 
         scheduler.schedule(() -> publishChange(Sensors.TEMPERATURE,
-                Functions.shortToBytes(change)), 200, TimeUnit.MILLISECONDS);
+                Functions.shortToBytes(change)), 20, TimeUnit.MILLISECONDS);
     }
 }
