@@ -58,6 +58,6 @@ public class BrakeSystem extends Actuator {
         System.out.println("Total Messages Received:\t" + received);
         System.out.println("Total Messages: \t\t\t" + manager.logStore.size());
         System.out.println("Total Error Simulated:\t\t" + Actuator.errorSimulationCount);
-        System.out.println("Error Rate: \t\t\t\t" + (manager.logStore.size() - received) + "%");
+        System.out.println("Error Rate: \t\t\t\t" + (manager.logStore.size() - received) / (double) manager.logStore.size() * 100 + "%");
     }
 }

@@ -56,7 +56,7 @@ public class EventManager implements Runnable {
             byte[] result = Functions.concatenateByteArrays(idInBytes, change);
             // the message sent will be in format id:result, where id in the first four bytes
             channelOut.publish(result, actuator);
-            checkEventReceived(id, actuator, change);
+            // checkEventReceived(id, actuator, change);
         } catch (IOException e) {
             e.printStackTrace();
         }
