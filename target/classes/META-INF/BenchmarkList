@@ -1,0 +1,2 @@
+JMH S 28 jmh.atomic.TestAtomicInteger S 70 jmh.atomic.jmh_generated.TestAtomicInteger_testIncrementAndGet_jmhTest S 19 testIncrementAndGet S 11 AverageTime E A 1 1 1 E I 1 2 E E I 2 10 E E I 1 1 E E E E E E U 12 MILLISECONDS E T 5 100 s 
+JMH S 24 jmh.normal.TestNormalInt S 66 jmh.normal.jmh_generated.TestNormalInt_testIncrementAndGet_jmhTest S 19 testIncrementAndGet S 11 AverageTime E A 1 1 1 E I 1 2 E E I 2 10 E E I 1 1 E E E E E E U 12 MILLISECONDS E T 5 100 s 
