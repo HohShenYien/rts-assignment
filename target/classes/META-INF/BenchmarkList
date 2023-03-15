@@ -1,0 +1,3 @@
+JMH S 14 jmh.TestDirect S 48 jmh.jmh_generated.TestDirect_testPublish_jmhTest S 11 testPublish S 11 AverageTime E A 1 1 1 E I 1 2 E E I 2 10 E E I 1 1 E E E E E E U 12 MILLISECONDS E T 5 100 s 
+JMH S 14 jmh.TestFanout S 48 jmh.jmh_generated.TestFanout_testPublish_jmhTest S 11 testPublish S 11 AverageTime E A 1 1 1 E I 1 2 E E I 2 10 E E I 1 1 E E E E E E U 12 MILLISECONDS E T 5 100 s 
+JMH S 13 jmh.TestTopic S 47 jmh.jmh_generated.TestTopic_testPublish_jmhTest S 11 testPublish S 11 AverageTime E A 1 1 1 E I 1 2 E E I 2 10 E E I 1 1 E E E E E E U 12 MILLISECONDS E T 5 100 s 
