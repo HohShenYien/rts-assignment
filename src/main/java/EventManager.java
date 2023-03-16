@@ -8,8 +8,8 @@ import utils.Functions;
 import utils.Log;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -21,7 +21,7 @@ public class EventManager implements Runnable {
     private final OutBoundChannel channelOut;
 
     private final ScheduledExecutorService scheduler;
-    private final HashMap<Integer, Log> logStore;
+    private final TreeMap<Integer, Log> logStore;
     private final Lock logLock;
 
     public EventManager(Connection connection, ScheduledExecutorService scheduler) throws IOException {
@@ -30,7 +30,7 @@ public class EventManager implements Runnable {
         channelOut = ChannelFactory.newOutBoundChannel(connection, Exchanges.ACTUATOR_INPUT);
 
         this.scheduler = scheduler;
-        logStore = new HashMap<>();
+        logStore = new TreeMap<>();
         logLock = new ReentrantLock(true);
     }
 
